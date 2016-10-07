@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+ 
+<head>
+  <title>WOF descender</title>
+  <script type="text/javascript" src="fileSaver.js"></script>
+  <script type="text/javascript" src="descender.js"></script>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>WOF Descender · Mapzen</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://mapzen.com/common/styleguide/styles/styleguide.css">
+</head>
+
+<body>
+<h1>WOF Descender!</h1>
+<hr>Enter a <a href="https://whosonfirst.mapzen.com/spelunker">Who's on First ID</a> and get a blob of GeoJSON of its descendants!</h2>
+
+
+<br><br>
+<!-- experiments in a UI for entering a WOF ID and level -->
+<form name="wof_data">  <!--  action="start()" -->
+
+  WOF ID:
+  <input type="text" name="wof_id" value="" placeholder="85633041" id="wof_id"> 
+   Descendant type: 
+    <select name="wof_level" value='region' id="wof_level">
+        <option value="region">region</option>
+        <option value="county">county</option>
+        <option value="locality">locality</option>
+        <option value="neighbourhood">neighbourhood</option>
+        <option value="postalcode">postalcode</option>
+        <option value="microhood">microhood</option>
+
+
+    </select>
+  <button class="btn btn-mapzen" type="submit" id="wof_button" >DESCEND</button>
+<!-- disabled="disabled" -->
+</form>
+<br><br>
+Want the GeoJSON of California's 57 counties? Enter 85688637 and choose `county`!<br>
+Or Canada's 10 provinces and 3 territories?  85633041 and choose `region`!<br>
+Or San Francisco's ZIP codes? 85922583 and choose `postalcode`!<br>
+(While you can skip levels (a.k.a. <a href="https://github.com/whosonfirst/whosonfirst-placetypes">placetypes</a>), only the first 500 results will be returned for now.)
+
+<script type="text/javascript">
+window.addEventListener("load", function () {
+    
+
+    var qs = window.location.search;
+	qs = qs.substring(1);
+	
+	var params = {};
+	var queries = qs.split("&");
+	var count = queries.length;
+	
+	for ( var i = 0; i < count; i++ ) {
+		temp = queries[i].split('=');
+		params[temp[0]] = temp[1];
+	}   
+	
+	console.log(params);
+	
+	if ((params['wof_id']) && (params['wof_level'])){
+
+        start(params['wof_id'], params['wof_level']);
+        return;
+	}
+	
+	// what would user do?
+	
+	
+    var b = document.getElementById("wof_button");
+    b.removeAttribute("disabled");
+    
+    b.onclick = function(){
+    
+        var wof_id = document.getElementById("wof_id");
+        wof_id = wof_id.value;
+        
+        var wof_level = document.getElementById("wof_level");
+        wof_level = wof_level.value;
+        
+        // console.log("wof id is " + wof_id);
+        // console.log("wof level is " + wof_level);
+        
+        try {
+           start(wof_id, wof_level);
+        } catch (e) {
+            console.log(e);
+        }
+        
+        return false;
+    };
+});
+</script>
+
+</body>
+</html>
+
+
