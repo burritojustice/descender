@@ -64,6 +64,13 @@ function start(wof_id, wof_level) {
         response = JSON.parse(xhr_parent.responseText);
         wof_parent_name = response.record['wof:name'];
         console.log("hey mom and dad: " + wof_parent_name);
+        
+        // add parent name to page
+        var parent_name = document.getElementById("parent_name");
+        var child = document.getElementById("h2_parent");
+//         var h2 = document.createElement("h2");
+        var t = document.createTextNode(wof_parent_name + "! ");
+        parent_name.appendChild(t);
         } 
     }
     
@@ -87,6 +94,14 @@ function start(wof_id, wof_level) {
             var wof_id = response.results[i]['wof:id'];
             var wof_name = response.results[i]['wof:name'];
             console.log(wof_name + ": " + wof_level);
+            
+            // add descendent names to page
+            var descendant_name = document.getElementById("descendant_name");
+            var child = document.getElementById("p1");
+            var node = document.createTextNode(wof_name + "! ");
+            descendant_name.appendChild(node);
+            
+            
             var wof_url = []; 
             wof_url[i] = makeWOFURL(wof_id);
             console.log(wof_url[i]);
