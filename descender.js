@@ -74,7 +74,7 @@ function start(wof_id, wof_level) {
         if (wof_level == "postalcode") {
             wof_level = "postal codes";
         }        
-        if (wof_level == "localty") {
+        if (wof_level == "locality") {
             wof_level = "localities";
         }           
         if (wof_level == "neighbourhood") {
