@@ -65,12 +65,37 @@ function start(wof_id, wof_level) {
         wof_parent_name = response.record['wof:name'];
         console.log("hey mom and dad: " + wof_parent_name);
         
+        if (wof_level == "county") {
+            wof_level = "counties";
+        }
+        if (wof_level == "region") {
+            wof_level = "regions";
+        }
+        if (wof_level == "postalcode") {
+            wof_level = "postal codes";
+        }        
+        if (wof_level == "localty") {
+            wof_level = "localities";
+        }           
+        if (wof_level == "neighbourhood") {
+            wof_level = "neighbourhoods";
+        }           
+        if (wof_level == "neighbourhood") {
+            wof_level = "neighbourhoods";
+        }  
+        if (wof_level == "microhood") {
+            wof_level = "microhoods";
+        }                              
+        
         // add parent name to page
         var parent_name = document.getElementById("parent_name");
-        var child = document.getElementById("h2_parent");
-//         var h2 = document.createElement("h2");
-        var t = document.createTextNode(wof_parent_name + "! ");
-        parent_name.appendChild(t);
+        var p0 = document.getElementById("p0");
+        var h2 = document.getElementById("h2");
+        
+        var t = document.createTextNode(wof_level + " of " + wof_parent_name + "! ");
+        p0.appendChild(t);
+//         parent_name.replaceChild(t,p0);
+
         } 
     }
     
@@ -89,6 +114,12 @@ function start(wof_id, wof_level) {
         console.log("building URLs: " + Date());
         response = JSON.parse(xhr.responseText);
         descendantsCount = response.results.length;
+        
+        var parent_name = document.getElementById("parent_name");
+        var p0 = document.getElementById("p0");
+        var h2 = document.getElementById("h2");
+        var t = document.createTextNode(wof_parent_name + "! ");
+        
         // loop through list and parse WOF IDs to build URLs
         for (var i = 0; i < descendantsCount; i++) {
             var wof_id = response.results[i]['wof:id'];
@@ -96,10 +127,10 @@ function start(wof_id, wof_level) {
             console.log(wof_name + ": " + wof_level);
             
             // add descendent names to page
-            var descendant_name = document.getElementById("descendant_name");
-            var child = document.getElementById("p1");
-            var node = document.createTextNode(wof_name + "! ");
-            descendant_name.appendChild(node);
+//             var descendant_name = document.getElementById("descendant_name");
+//             var child = document.getElementById("p1");
+//             var node = document.createTextNode(wof_name + "! ");
+//             descendant_name.appendChild(node);
             
             
             var wof_url = []; 
@@ -145,8 +176,16 @@ function start(wof_id, wof_level) {
         this.wofJSON = this.responseText;  
         feature = JSON.parse(this.responseText);
         features.push(feature); 
+        
+        var wof_name = feature.properties['wof:name'];
+        var descendant_name = document.getElementById("descendant_name");
+        var child = document.getElementById("p1");
+        var node = document.createTextNode((1 + descendantsProcessed) + ": " + wof_name + "! ");
+        descendant_name.appendChild(node);
+
         console.log('processed: ' + (1 + descendantsProcessed) + ' of ' + descendantsCount);
         descendantsProcessed++;
+        
 
         } else {
         console.log("uh oh");
