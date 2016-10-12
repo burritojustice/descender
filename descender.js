@@ -64,9 +64,15 @@ function start(wof_id, wof_level) {
         response = JSON.parse(xhr_parent.responseText);
         wof_parent_name = response.record['wof:name'];
         console.log("hey mom and dad: " + wof_parent_name);
-        
+
+        if (wof_level == "ocean") {
+            wof_level = "oceans";
+        }        
         if (wof_level == "county") {
             wof_level = "counties";
+        }
+        if (wof_level == "country") {
+            wof_level = "countries";
         }
         if (wof_level == "region") {
             wof_level = "regions";
@@ -85,8 +91,14 @@ function start(wof_id, wof_level) {
         }  
         if (wof_level == "microhood") {
             wof_level = "microhoods";
-        }                              
-        
+        }                        
+        if (wof_level == "disputed") {
+            wof_level = "disputed areas";
+        }  
+        if (wof_level == "timezone") {
+            wof_level = "timeszones";
+        }                     
+                
         // add parent name to page
         var parent_name = document.getElementById("parent_name");
         var p0 = document.getElementById("p0");
