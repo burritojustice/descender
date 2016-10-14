@@ -5,11 +5,21 @@
   <title>WOF descender</title>
   <script type="text/javascript" src="FileSaver.js"></script>
   <script type="text/javascript" src="descender.js"></script>
+  <link rel="stylesheet" href="https://mapzen.com/js/mapzen.css">
+  <script src="https://mapzen.com/js/mapzen.min.js"></script>
   <meta charset="utf-8">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <title>WOF Descender · Mapzen</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://mapzen.com/common/styleguide/styles/styleguide.css">
+  <style>
+  #map {
+    height: 400px;
+    width: 100%;
+    position: relative;
+  }
+  html,body{margin: 0; padding: 0}
+</style>
 </head>
 
 <body>
@@ -58,6 +68,10 @@
 <!-- disabled="disabled" -->
 </form>
 <br><br>
+<div id="map"></div>
+
+
+
 <div id="parent_name">
 <h2 id="h2_parent"><p id="p0"></h2>
 </div>
@@ -72,6 +86,10 @@ Or San Francisco's ZIP codes? 85922583 and choose `postalcode`!<br>
 (While you can skip levels (a.k.a. <a href="https://github.com/whosonfirst/whosonfirst-placetypes">placetypes</a>), only the first 500 results will be returned for now.)
 
 <script type="text/javascript">
+
+var map = L.Mapzen.map('map');
+map.setView([58.3, -112.4], 4);
+
 window.addEventListener("load", function () {
     
 

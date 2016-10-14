@@ -1,5 +1,7 @@
 // start();
 // 
+
+
 function start(wof_id, wof_level) {
     //var wof_id = document.getElementById("wof_id").value;
     //var wof_level = document.getElementById("wof_level").value;
@@ -25,11 +27,12 @@ function start(wof_id, wof_level) {
     var wof_parent = wof_id;
     var wof_parent_name;
     var wof_parent_url = 'https://whosonfirst.mapzen.com/api/rest/?method=whosonfirst.places.getInfo&access_token=' + wof_access_token + '&id=' + wof_parent;
-
+    var wof_parent_bbox;
     // define XHR stuff
 
     var xhr = new XMLHttpRequest();
     var xhr_parent = new XMLHttpRequest();
+    var xhr_parent_wof = new XMLHttpRequest();
 
     // counters and arrays for descendants 
 
@@ -54,7 +57,7 @@ function start(wof_id, wof_level) {
     // get name of parent wof_id
     
     xhr_parent.open('GET', wof_parent_url, true);
-    console.log(wof_parent_url);
+//     console.log(wof_parent_url);
     xhr_parent.send();
     xhr_parent.addEventListener("readystatechange", get_parent_name, false);   
     
@@ -62,7 +65,9 @@ function start(wof_id, wof_level) {
     if (xhr_parent.readyState == 4 && xhr_parent.status == 200) {
         console.log("getting parent name: " + Date());
         response = JSON.parse(xhr_parent.responseText);
+        //get parent name
         wof_parent_name = response.record['wof:name'];
+
         console.log("hey mom and dad: " + wof_parent_name);
 
         if (wof_level == "ocean") {
@@ -169,7 +174,14 @@ function start(wof_id, wof_level) {
                 'type': 'FeatureCollection',
                 'features': features,
             }
+            
+            // add to map
+
+//             L.geoJson(feature_collection).addTo(map);
+            
             // dump GeoJSON into blob
+
+
             console.log("starting blob " + Date());
             var args = {type: "application/json"};
             var blob = new Blob([JSON.stringify(feature_collection)], args);
@@ -189,6 +201,22 @@ function start(wof_id, wof_level) {
         feature = JSON.parse(this.responseText);
         features.push(feature); 
         
+        // move map to the bounding box on first descendant 
+        var lat = feature.properties['lbl:latitude'];
+        console.log('lat ' + lat);
+        var lon = feature.properties['lbl:longitude'];
+        console.log('lon ' + lon);
+//         var bbox[];
+//         bbox = feature.properties['geom:bbox'];
+    if (descendantsProcessed == 0){
+        map.panTo([lat,lon]);
+        }
+//         map.fitBounds([bbox[0],bbox[1]]
+//         ,[bbox[2],bbox[3]]);
+        
+        // add geojson to map
+        L.geoJson(feature, {style: {weight:2}}).addTo(map);
+
         var wof_name = feature.properties['wof:name'];
         var descendant_name = document.getElementById("descendant_name");
         var child = document.getElementById("p1");
@@ -221,6 +249,10 @@ function start(wof_id, wof_level) {
     while (wof[i]) {
         wof_url_middle += wof[i] + '/';
         i++;
+    }
+    if (id == 0) {
+    wof_url_middle = "0/";
+    wof_url_suffix = '0.geojson';
     }
     wof_url = wof_url_prefix + wof_url_middle + wof_url_suffix;
     return wof_url;
