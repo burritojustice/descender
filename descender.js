@@ -28,6 +28,7 @@ function start(wof_id, wof_level) {
     var wof_parent_name;
     var wof_parent_url = 'https://whosonfirst.mapzen.com/api/rest/?method=whosonfirst.places.getInfo&access_token=' + wof_access_token + '&id=' + wof_parent;
     var wof_parent_bbox;
+    
     // define XHR stuff
 
     var xhr = new XMLHttpRequest();
@@ -43,8 +44,7 @@ function start(wof_id, wof_level) {
     // prefix and suffix for building GeoJSON feature collection
 
     var features = [];
-    // var featureCollectionStart = '{ "type": "FeatureCollection", "features": [ ';
-    // var featureCollectionEnd = ' ] }';
+
 
     // build url for list to get list of descendants 
 
@@ -101,13 +101,19 @@ function start(wof_id, wof_level) {
             wof_level = "disputed areas";
         }  
         if (wof_level == "timezone") {
-            wof_level = "timeszones";
+            wof_level = "timezones";
         }                     
                 
         // add parent name to page
         var parent_name = document.getElementById("parent_name");
         var p0 = document.getElementById("p0");
+        var p1 = document.getElementById("p1");
         var h2 = document.getElementById("h2");
+        var save = document.getElementById("save");
+        p0.innerHTML = "";
+        p1.innerHTML = "";
+        save.innerHTML = "hold on";
+        save.disabled = "disabled";
         
         var t = document.createTextNode(wof_level + " of " + wof_parent_name + "! ");
         p0.appendChild(t);
@@ -132,10 +138,11 @@ function start(wof_id, wof_level) {
         response = JSON.parse(xhr.responseText);
         descendantsCount = response.results.length;
         
-        var parent_name = document.getElementById("parent_name");
-        var p0 = document.getElementById("p0");
-        var h2 = document.getElementById("h2");
-        var t = document.createTextNode(wof_parent_name + "! ");
+//         var parent_name = document.getElementById("parent_name");
+//         var p0 = document.getElementById("p0");
+//         var h2 = document.getElementById("h2");
+//         
+//         var t = document.createTextNode(wof_parent_name + "! ");
         
         // loop through list and parse WOF IDs to build URLs
         for (var i = 0; i < descendantsCount; i++) {
@@ -187,7 +194,15 @@ function start(wof_id, wof_level) {
             var blob = new Blob([JSON.stringify(feature_collection)], args);
             console.log("stopping blob " + Date());
             var filename = wof_parent_name + '_' + wof_parent + '_' + wof_level + '_' + descendantsCount + '.geojson'
-            saveAs(blob, filename);
+            
+            var save = document.getElementById("save");
+            save.disabled = "";
+            save.innerHTML = "GET ONE GEOJSON FOR " + descendantsCount + " " + wof_level + " of " +  wof_parent_name;
+            save.onclick = function() {
+                saveAs(blob, filename);
+            }
+            
+//             saveAs(blob, filename);
         }
 
         wait();
@@ -196,6 +211,7 @@ function start(wof_id, wof_level) {
 
     function process_wof_descendant(e) {
     if (this.readyState == 4 && this.status == 200) {
+    
         // add JSON to body
         this.wofJSON = this.responseText;  
         feature = JSON.parse(this.responseText);
@@ -208,8 +224,8 @@ function start(wof_id, wof_level) {
         console.log('lon ' + lon);
 //         var bbox[];
 //         bbox = feature.properties['geom:bbox'];
-    if (descendantsProcessed == 0){
-        map.panTo([lat,lon]);
+        if (descendantsProcessed == 0){
+            map.panTo([lat,lon]);
         }
 //         map.fitBounds([bbox[0],bbox[1]]
 //         ,[bbox[2],bbox[3]]);
@@ -221,7 +237,7 @@ function start(wof_id, wof_level) {
         var descendant_name = document.getElementById("descendant_name");
         var child = document.getElementById("p1");
         var node = document.createTextNode((1 + descendantsProcessed) + ": " + wof_name + "! ");
-        descendant_name.appendChild(node);
+        child.appendChild(node);
 
         console.log('processed: ' + (1 + descendantsProcessed) + ' of ' + descendantsCount);
         descendantsProcessed++;

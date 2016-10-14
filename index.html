@@ -19,7 +19,7 @@
     position: relative;
   }
   html,body{margin: 0; padding: 0}
-</style>
+    </style>
 </head>
 
 <body>
@@ -34,7 +34,7 @@
 <form name="wof_data">  <!--  action="start()" -->
 
   WOF ID:
-  <input type="text" name="wof_id" value="" placeholder="85633041" id="wof_id"> 
+  <input type="text" name="wof_id" value="85633041" placeholder="85633041" id="wof_id"> 
    Descendant type: 
     <select name="wof_level" value='region' id="wof_level">
         <option value="country">country (C)</option>
@@ -64,21 +64,24 @@
         
 
     </select>
-  <button class="btn btn-mapzen" type="submit" id="wof_button" >DESCEND</button>
+  <button class="btn btn-mapzen" type="submit" id="wof_button">DESCEND</button>
 <!-- disabled="disabled" -->
+
 </form>
-<br><br>
-<div id="map"></div>
-
-
 
 <div id="parent_name">
 <h2 id="h2_parent"><p id="p0"></h2>
 </div>
+<div id="map"></div>
+<br>
+<button class="btn btn-mapzen" type="submit" id="save" disabled="disabled">ENTER A WOF ID ABOVE</button>
 <div id="descendant_name">
+<br>
 <p id="p1">
 </div>
-<br><br>
+
+
+<br>
 
 Want the GeoJSON of California's 57 counties? Enter 85688637 and choose `county`!<br>
 Or Canada's 10 provinces and 3 territories?  85633041 and choose `region`!<br>
@@ -138,6 +141,9 @@ window.addEventListener("load", function () {
         
         return false;
     };
+    
+    
+    
 });
 </script>
 </div>
