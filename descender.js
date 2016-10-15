@@ -41,7 +41,7 @@ function start(wof_id, wof_level) {
     var descendantsCount = 0;
     var descendantsProcessed = 0;
 
-    // prefix and suffix for building GeoJSON feature collection
+    // array for descendant's GeoJSON 
 
     var features = [];
 
@@ -49,10 +49,13 @@ function start(wof_id, wof_level) {
     // build url for list to get list of descendants 
 
     var url = 'https://whosonfirst.mapzen.com/api/rest/?method=whosonfirst.places.getDescendants&access_token=' + wof_access_token + '&id=' + wof_id +'&placetype=' + wof_level + '&page=1&per_page=2000&exclude=nullisland';
-
+//     console.log(url);
     /*
     url = 'https://whosonfirst-api.dev.mapzen.com/api/rest/?method=whosonfirst.places.getDescendants&id=' + wof_id +'&placetype=' + wof_level + '&page=1&per_page=2000';
     */
+
+
+    
 
     // get name of parent wof_id
     
@@ -110,15 +113,14 @@ function start(wof_id, wof_level) {
         var p1 = document.getElementById("p1");
         var h2 = document.getElementById("h2");
         var save = document.getElementById("save");
+        // clear out previous name, if any
         p0.innerHTML = "";
         p1.innerHTML = "";
-        save.innerHTML = "hold on";
+        // update button text
+        save.innerHTML = "hold on getting " + wof_level;
         save.disabled = "disabled";
-        
         var t = document.createTextNode(wof_level + " of " + wof_parent_name + "! ");
         p0.appendChild(t);
-//         parent_name.replaceChild(t,p0);
-
         } 
     }
     
@@ -129,7 +131,6 @@ function start(wof_id, wof_level) {
     xhr.send();
     xhr.addEventListener("readystatechange", process_wof_id, false);
 
-
     // check readyState of XHR request for descendant list
 
     function process_wof_id(e) {
@@ -138,27 +139,20 @@ function start(wof_id, wof_level) {
         response = JSON.parse(xhr.responseText);
         descendantsCount = response.results.length;
         
-//         var parent_name = document.getElementById("parent_name");
-//         var p0 = document.getElementById("p0");
-//         var h2 = document.getElementById("h2");
-//         
-//         var t = document.createTextNode(wof_parent_name + "! ");
+        var parent_wof_url = makeWOFURL(wof_parent);
+        var wof_url = []; 
+        wof_url[-1] = parent_wof_url;
+
         
         // loop through list and parse WOF IDs to build URLs
         for (var i = 0; i < descendantsCount; i++) {
+            if (i > -1){
             var wof_id = response.results[i]['wof:id'];
             var wof_name = response.results[i]['wof:name'];
             console.log(wof_name + ": " + wof_level);
-            
-            // add descendent names to page
-//             var descendant_name = document.getElementById("descendant_name");
-//             var child = document.getElementById("p1");
-//             var node = document.createTextNode(wof_name + "! ");
-//             descendant_name.appendChild(node);
-            
-            
-            var wof_url = []; 
+//             var wof_url = []; 
             wof_url[i] = makeWOFURL(wof_id);
+            }
             console.log(wof_url[i]);
             //get the URL of a descendant 
             var xhr2 = new XMLHttpRequest();
@@ -177,34 +171,35 @@ function start(wof_id, wof_level) {
                             console.log("buffering...");
                             return;
             }
+            
+            // once we're done, glom GeoJSON of descendants into a feature collection
+            
             feature_collection = {
                 'type': 'FeatureCollection',
                 'features': features,
             }
             
-            // add to map
-
-//             L.geoJson(feature_collection).addTo(map);
-            
             // dump GeoJSON into blob
-
-
             console.log("starting blob " + Date());
             var args = {type: "application/json"};
             var blob = new Blob([JSON.stringify(feature_collection)], args);
             console.log("stopping blob " + Date());
             var filename = wof_parent_name + '_' + wof_parent + '_' + wof_level + '_' + descendantsCount + '.geojson'
             
+            // get size of blob
+            var blobSize = (blob.size);
+            var blobSizeMB = formatSizeUnits(blobSize);
+            
+            // update button text
             var save = document.getElementById("save");
             save.disabled = "";
-            save.innerHTML = "GET ONE GEOJSON FOR " + descendantsCount + " " + wof_level + " of " +  wof_parent_name;
+            save.innerHTML = "GET A " + blobSizeMB + " GEOJSON BLOB FOR " + descendantsCount + " " + wof_level + " of " +  wof_parent_name;
+            
+            // wait for user to click on the button to save the blob
             save.onclick = function() {
                 saveAs(blob, filename);
             }
-            
-//             saveAs(blob, filename);
-        }
-
+        } // function wait
         wait();
         } //if
     } //function
@@ -212,19 +207,24 @@ function start(wof_id, wof_level) {
     function process_wof_descendant(e) {
     if (this.readyState == 4 && this.status == 200) {
     
-        // add JSON to body
+        // add descendant's JSON to features array
         this.wofJSON = this.responseText;  
         feature = JSON.parse(this.responseText);
         features.push(feature); 
         
-        // move map to the bounding box on first descendant 
+        // move map to the bounding box of first descendant until I figure out how to get the parent parent's bounding box 
         var lat = feature.properties['lbl:latitude'];
+        if (lat == null){
+        lat = feature.properties['geom:latitude'];
+        }
         console.log('lat ' + lat);
         var lon = feature.properties['lbl:longitude'];
+        if (lon == null){
+        lon = feature.properties['geom:longitude'];        }
         console.log('lon ' + lon);
 //         var bbox[];
 //         bbox = feature.properties['geom:bbox'];
-        if (descendantsProcessed == 0){
+        if ((descendantsProcessed) == 0){
             map.panTo([lat,lon]);
         }
 //         map.fitBounds([bbox[0],bbox[1]]
@@ -241,7 +241,6 @@ function start(wof_id, wof_level) {
 
         console.log('processed: ' + (1 + descendantsProcessed) + ' of ' + descendantsCount);
         descendantsProcessed++;
-        
 
         } else {
         console.log("uh oh");
@@ -272,6 +271,16 @@ function start(wof_id, wof_level) {
     }
     wof_url = wof_url_prefix + wof_url_middle + wof_url_suffix;
     return wof_url;
+    }
+
+    function formatSizeUnits(bytes){
+            if      (bytes>=1000000000) {bytes=(bytes/1000000000).toFixed(2)+' GB';}
+            else if (bytes>=1000000)    {bytes=(bytes/1000000).toFixed(2)+' MB';}
+            else if (bytes>=1000)       {bytes=(bytes/1000).toFixed(2)+' KB';}
+            else if (bytes>1)           {bytes=bytes+' bytes';}
+            else if (bytes==1)          {bytes=bytes+' byte';}
+            else                        {bytes='0 byte';}
+            return bytes;
     }
 
     function topojsonify() {
