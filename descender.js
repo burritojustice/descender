@@ -26,8 +26,18 @@ function start(wof_id, wof_level) {
     // global variables for parent name`
     var wof_parent = wof_id;
     var wof_parent_name;
-    var wof_parent_url = 'https://whosonfirst.mapzen.com/api/rest/?method=whosonfirst.places.getInfo&access_token=' + wof_access_token + '&id=' + wof_parent;
+    var wof_parent_url = 'https://whosonfirst.mapzen.com/api/rest/?method=whosonfirst.places.getInfo&access_token=' + wof_access_token + '&id=' + wof_parent + "&extras=geom:bbox,wof:hierarchy,";
     var wof_parent_bbox;
+    var wof_grandparent;
+    var wof_hierarchy = [];
+    
+    var includeParent = false;
+//     var includeParentStatus = document.getElementById("includeParent");
+//     if (includeParentStatus.checked == "true") {
+//         includeParent = true;
+//     }
+
+    var loop_position;
     
     // define XHR stuff
 
@@ -70,6 +80,24 @@ function start(wof_id, wof_level) {
         response = JSON.parse(xhr_parent.responseText);
         //get parent name
         wof_parent_name = response.record['wof:name'];
+        wof_parent_bbox = response.record['geom:bbox'];
+        wof_parent_type = response.record['wof:placetype'];
+        wof_grandparent = response.record['wof:parent_id'];
+//         wof_hierarchy = response.record['wof:hierarchy']['continent_id'];
+        console.log("grandparent: " + wof_grandparent);
+        
+        // chop up and rearrange bounding box
+        var latlon = wof_parent_bbox.split(',');
+        sw = [latlon[1],latlon[0]];
+        ne = [latlon[3],latlon[2]];
+
+        console.log(wof_parent_name + " bbox: sw=" + sw + " ne= " + ne);
+
+        map.fitBounds([sw,ne]);
+
+        
+//         var lat = [];
+//         lat[0] = wof_parent_bbox[
 
         console.log("hey mom and dad: " + wof_parent_name);
 
@@ -115,11 +143,11 @@ function start(wof_id, wof_level) {
         var save = document.getElementById("save");
         // clear out previous name, if any
         p0.innerHTML = "";
-        p1.innerHTML = "";
+        p1.innerHTML = "parent is  " + wof_parent_name + ", grandparent is " + wof_grandparent + "! ";
         // update button text
         save.innerHTML = "hold on getting " + wof_level;
         save.disabled = "disabled";
-        var t = document.createTextNode(wof_level + " of " + wof_parent_name + "! ");
+        var t = document.createTextNode(wof_level + " in the " + wof_parent_type + " of " + wof_parent_name + "! ");
         p0.appendChild(t);
         } 
     }
@@ -141,20 +169,24 @@ function start(wof_id, wof_level) {
         
         var parent_wof_url = makeWOFURL(wof_parent);
         var wof_url = []; 
-        wof_url[-1] = parent_wof_url;
-
+//         if (includeParent) {
+//             console.log("including parent!");
+//             //bumping up descendantsCount, inserting url of parent 
+//             descendantsCount++;
+//             wof_url[descendantsCount] = parent_wof_url;
+//         }
+        
         
         // loop through list and parse WOF IDs to build URLs
         for (var i = 0; i < descendantsCount; i++) {
-            if (i > -1){
             var wof_id = response.results[i]['wof:id'];
             var wof_name = response.results[i]['wof:name'];
             console.log(wof_name + ": " + wof_level);
 //             var wof_url = []; 
             wof_url[i] = makeWOFURL(wof_id);
-            }
+            
             console.log(wof_url[i]);
-            //get the URL of a descendant 
+            //download and process the descendant 
             var xhr2 = new XMLHttpRequest();
             xhr2.open('GET', wof_url[i], true);
             console.log("getting " + i);
@@ -193,7 +225,7 @@ function start(wof_id, wof_level) {
             // update button text
             var save = document.getElementById("save");
             save.disabled = "";
-            save.innerHTML = "GET A " + blobSizeMB + " GEOJSON BLOB FOR " + descendantsCount + " " + wof_level + " of " +  wof_parent_name;
+            save.innerHTML = "CLICK UPON MY " + blobSizeMB + " GEOJSON BLOB OF " + descendantsCount + " " + wof_level + " IN " +  wof_parent_name;
             
             // wait for user to click on the button to save the blob
             save.onclick = function() {
@@ -207,36 +239,26 @@ function start(wof_id, wof_level) {
     function process_wof_descendant(e) {
     if (this.readyState == 4 && this.status == 200) {
     
-        // add descendant's JSON to features array
+        // JSONify WOF data 
         this.wofJSON = this.responseText;  
         feature = JSON.parse(this.responseText);
-        features.push(feature); 
-        
-        // move map to the bounding box of first descendant until I figure out how to get the parent parent's bounding box 
-        var lat = feature.properties['lbl:latitude'];
-        if (lat == null){
-        lat = feature.properties['geom:latitude'];
-        }
-        console.log('lat ' + lat);
-        var lon = feature.properties['lbl:longitude'];
-        if (lon == null){
-        lon = feature.properties['geom:longitude'];        }
-        console.log('lon ' + lon);
-//         var bbox[];
-//         bbox = feature.properties['geom:bbox'];
-        if ((descendantsProcessed) == 0){
-            map.panTo([lat,lon]);
-        }
-//         map.fitBounds([bbox[0],bbox[1]]
-//         ,[bbox[2],bbox[3]]);
-        
-        // add geojson to map
-        L.geoJson(feature, {style: {weight:2}}).addTo(map);
-
         var wof_name = feature.properties['wof:name'];
+        var wof_id = feature.properties['wof:id'];
+
+        // add descendant's JSON to features array and map -- if/else was to check to see if parent should also be included but that's on hold
+        console.log(wof_name + " vs " + wof_parent_name);
+        if ((includeParent == false) && (wof_name == wof_parent_name)) {
+            console.log("checkbox = " + includeParent + " so not including " + wof_name);
+        }
+        else {
+            features.push(feature); 
+            L.geoJson(feature, {style: {weight:2}}).addTo(map);
+        }
+        
+        // add descendant names to list below map
         var descendant_name = document.getElementById("descendant_name");
         var child = document.getElementById("p1");
-        var node = document.createTextNode((1 + descendantsProcessed) + ": " + wof_name + "! ");
+        var node = document.createTextNode((1 + descendantsProcessed) + ": " + wof_name + "! (" + wof_id + ") ");
         child.appendChild(node);
 
         console.log('processed: ' + (1 + descendantsProcessed) + ' of ' + descendantsCount);
@@ -274,9 +296,9 @@ function start(wof_id, wof_level) {
     }
 
     function formatSizeUnits(bytes){
-            if      (bytes>=1000000000) {bytes=(bytes/1000000000).toFixed(2)+' GB';}
-            else if (bytes>=1000000)    {bytes=(bytes/1000000).toFixed(2)+' MB';}
-            else if (bytes>=1000)       {bytes=(bytes/1000).toFixed(2)+' KB';}
+            if      (bytes>=1000000000) {bytes=(bytes/1000000000).toFixed(1)+' GB';}
+            else if (bytes>=1000000)    {bytes=(bytes/1000000).toFixed(1)+' MB';}
+            else if (bytes>=1000)       {bytes=(bytes/1000).toFixed(1)+' KB';}
             else if (bytes>1)           {bytes=bytes+' bytes';}
             else if (bytes==1)          {bytes=bytes+' byte';}
             else                        {bytes='0 byte';}

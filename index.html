@@ -26,9 +26,11 @@
 <div class="container">
 
 <h1>WOF Descender!</h1>
-<hr>Enter a <a href="https://whosonfirst.mapzen.com/spelunker">Who's on First ID</a> and get a blob of GeoJSON of its descendants!</h2>
-
-
+<hr>Enter a <a href="https://whosonfirst.mapzen.com/spelunker">Who's on First ID</a> and get a blob of GeoJSON of its <a href="https://github.com/whosonfirst/whosonfirst-placetypes">descendants</a>!</h2>
+<!-- 
+<h6>continent > empire > country > macroregion > region > macrocounty > "county" > "metro area"> locality > macrohood > neighbourhood > microhood > campus > building > address > venue </h6>
+<h6>continent > country > region > "county" > locality > neighbourhood</h6>
+ -->
 <br><br>
 <!-- experiments in a UI for entering a WOF ID and level -->
 <form name="wof_data">  <!--  action="start()" -->
@@ -67,7 +69,15 @@
   <button class="btn btn-mapzen" type="submit" id="wof_button">DESCEND</button>
 <!-- disabled="disabled" -->
 
+
+<!-- 
+<form>
+  <div class="form-group">
+    <input type="checkbox" id="includeParent" name="includeParent">
+    <label for="check-1">include parent in GeoJSON</label>
+  </div>
 </form>
+ -->
 
 <div id="parent_name">
 <h2 id="h2_parent"><p id="p0"></h2>
@@ -92,6 +102,8 @@ Or San Francisco's ZIP codes? 85922583 and choose `postalcode`!<br>
 
 var map = L.Mapzen.map('map');
 map.setView([58.3, -112.4], 4);
+// includeParent = false;
+
 
 window.addEventListener("load", function () {
     
@@ -123,7 +135,7 @@ window.addEventListener("load", function () {
     b.removeAttribute("disabled");
     
     b.onclick = function(){
-    
+        
         var wof_id = document.getElementById("wof_id");
         wof_id = wof_id.value;
         
