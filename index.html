@@ -31,7 +31,10 @@
 <h6>continent > empire > country > macroregion > region > macrocounty > "county" > "metro area"> locality > macrohood > neighbourhood > microhood > campus > building > address > venue </h6>
 <h6>continent > country > region > "county" > locality > neighbourhood</h6>
  -->
-<br><br>
+<br>Search for a country:
+  <input type="text" name="wof_search" id="wof_search" value="Canada"> 
+  <button class="btn btn-mapzen" type="submit" id="wof_search_button">GET WOF</button>
+<br>
 <!-- experiments in a UI for entering a WOF ID and level -->
 <form name="wof_data">  <!--  action="start()" -->
 
@@ -63,11 +66,10 @@
         <option value="metroarea">metro area (O)</option>
         <option value="borough">borough (CO)</option>
         <option value="disputed">disputed (CO)</option>
-        
-
     </select>
   <button class="btn btn-mapzen" type="submit" id="wof_button">DESCEND</button>
 <!-- disabled="disabled" -->
+<br>
 
 
 <!-- 
@@ -101,9 +103,42 @@ Or San Francisco's ZIP codes? 85922583 and choose `postalcode`!<br>
 <script type="text/javascript">
 
 var map = L.Mapzen.map('map');
-map.setView([58.3, -112.4], 4);
+map.setView([40, -112.4], 3);
 // includeParent = false;
 
+// search for country wof id
+
+
+var wof_access_token = 'bfa3cbc6f49de8faf4d99e41c8d328f2';
+var search = document.getElementById("wof_search_button");
+var wof_search = document.getElementById("wof_search");
+
+search.addEventListener("click", function(){
+
+    var wof_search_value = wof_search.value;
+    console.log("passing " + wof_search_value + " to WOF search");
+//     search.onclick = function(){
+        var xhr_search_wof = new XMLHttpRequest();
+        var search_url = "https://whosonfirst.mapzen.com/api/rest/?method=whosonfirst.places.search&access_token=" + wof_access_token + "&names=" +  wof_search_value + "&placetype=country";
+        console.log("wof search url: " + search_url);
+
+        xhr_search_wof.open('GET', search_url, true);
+        xhr_search_wof.send();
+        xhr_search_wof.addEventListener("readystatechange", search_wof_countries, false);   
+
+            function search_wof_countries(e) {
+            if (xhr_search_wof.readyState == 4 && xhr_search_wof.status == 200) {
+                response = JSON.parse(xhr_search_wof.responseText);
+                var wof_search_top_result = response.results[0]['wof:id'];
+            
+                console.log("top result is " + wof_search_top_result);
+                var wof_id = document.getElementById("wof_id");
+                wof_id.value = wof_search_top_result;
+            }
+        } // wof_search 
+        return false; 
+//     }; // s.onclick  
+});
 
 window.addEventListener("load", function () {
     
@@ -120,7 +155,7 @@ window.addEventListener("load", function () {
 		params[temp[0]] = temp[1];
 	}   
 	
-	console.log(params);
+// 	console.log(params);
 	
 	if ((params['wof_id']) && (params['wof_level'])){
 
@@ -129,6 +164,10 @@ window.addEventListener("load", function () {
 	}
 	
 	// what would user do?
+	
+
+	
+	
 	
 	
     var b = document.getElementById("wof_button");

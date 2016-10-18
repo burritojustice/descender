@@ -12,8 +12,8 @@ function start(wof_id, wof_level) {
 
     // 
     // // test WOF IDs, level, and token   
-
     var wof_access_token = 'bfa3cbc6f49de8faf4d99e41c8d328f2';
+
     //     var wof_id = 85688637; // california
     //     var wof_id = 85632227; // tanzania
     //     var wof_id = 85633041; // canada
@@ -23,7 +23,7 @@ function start(wof_id, wof_level) {
     //     var wof_level = 'region';
 
 
-    // global variables for parent name`
+    // global variables for parent name
     var wof_parent = wof_id;
     var wof_parent_name;
     var wof_parent_url = 'https://whosonfirst.mapzen.com/api/rest/?method=whosonfirst.places.getInfo&access_token=' + wof_access_token + '&id=' + wof_parent + "&extras=geom:bbox,wof:hierarchy,";
@@ -54,6 +54,7 @@ function start(wof_id, wof_level) {
     // array for descendant's GeoJSON 
 
     var features = [];
+
 
 
     // build url for list to get list of descendants 
@@ -95,9 +96,6 @@ function start(wof_id, wof_level) {
 
         map.fitBounds([sw,ne]);
 
-        
-//         var lat = [];
-//         lat[0] = wof_parent_bbox[
 
         console.log("hey mom and dad: " + wof_parent_name);
 
@@ -244,6 +242,8 @@ function start(wof_id, wof_level) {
         feature = JSON.parse(this.responseText);
         var wof_name = feature.properties['wof:name'];
         var wof_id = feature.properties['wof:id'];
+        var wof_placetype = feature.properties['wof:placetype'];
+
 
         // add descendant's JSON to features array and map -- if/else was to check to see if parent should also be included but that's on hold
         console.log(wof_name + " vs " + wof_parent_name);
@@ -252,7 +252,13 @@ function start(wof_id, wof_level) {
         }
         else {
             features.push(feature); 
+            if (wof_placetype == "disputed"){
+                L.geoJson(feature, {style: {weight:2, color:'#ff0000'}}).addTo(map);
+
+            }
+            else {
             L.geoJson(feature, {style: {weight:2}}).addTo(map);
+            }
         }
         
         // add descendant names to list below map
