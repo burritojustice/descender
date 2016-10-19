@@ -31,8 +31,36 @@
 <h6>continent > empire > country > macroregion > region > macrocounty > "county" > "metro area"> locality > macrohood > neighbourhood > microhood > campus > building > address > venue </h6>
 <h6>continent > country > region > "county" > locality > neighbourhood</h6>
  -->
-<br>Search for a country:
-  <input type="text" name="wof_search" id="wof_search" value="Canada"> 
+<br>Search all of the
+<select name="wof_parent_level" value='country' id="wof_parent_level">
+        <option value="country" selected="selected">countries</option>
+        <option value="region">regions</option>
+        <option value="county">counties</option>
+        <option value="localadmin">localadmins</option>
+        <option value="locality">localities</option>
+        <option value="macroohood">macrohoods</option>
+        <option value="neighbourhood">neighbourhoods</option>
+        <option value="microhood">microhoods</option>
+        <option value="postalcode">postalcodes</option>
+        <option value="campus">campuses</option>
+        <option value="venue">venues</option>
+        <option value="address">addresses</option>
+        <option value="">--less common--</option>
+        <option value="planet">planets</option>
+        <option value="continent">continents</option>
+        <option value="ocean">oceans</option>
+        <option value="empire">empires</option>
+        <option value="timezone">timezones</option>
+        <option value="marinearea">marine areas</option>
+        <option value="dependency">dependencies</option>
+        <option value="macroregion">macroregions</option>
+        <option value="metroarea">metro areas</option>
+        <option value="borough">boroughs</option>
+        <option value="disputed">disputed areas</option>
+    </select>
+for
+  <input type="text" name="wof_search" id="wof_search" value="Canada">
+   
   <button class="btn btn-mapzen" type="submit" id="wof_search_button">GET WOF</button>
 <br>
 <!-- experiments in a UI for entering a WOF ID and level -->
@@ -65,7 +93,7 @@
         <option value="macroregion">macroregion (O)</option>
         <option value="metroarea">metro area (O)</option>
         <option value="borough">borough (CO)</option>
-        <option value="disputed">disputed (CO)</option>
+        <option value="disputed">disputed area (CO)</option>
     </select>
   <button class="btn btn-mapzen" type="submit" id="wof_button">DESCEND</button>
 <!-- disabled="disabled" -->
@@ -112,16 +140,18 @@ map.setView([40, -112.4], 3);
 var wof_access_token = 'bfa3cbc6f49de8faf4d99e41c8d328f2';
 var search = document.getElementById("wof_search_button");
 var wof_search = document.getElementById("wof_search");
+var wof_parent_level = document.getElementById("wof_parent_level");
 
 search.addEventListener("click", function(){
 
     var wof_search_value = wof_search.value;
+    var wof_parent_level_value = wof_parent_level.value;
     console.log("passing " + wof_search_value + " to WOF search");
 //     search.onclick = function(){
         var xhr_search_wof = new XMLHttpRequest();
-        var search_url = "https://whosonfirst.mapzen.com/api/rest/?method=whosonfirst.places.search&access_token=" + wof_access_token + "&names=" +  wof_search_value + "&placetype=country";
-        console.log("wof search url: " + search_url);
+        var search_url = "https://whosonfirst.mapzen.com/api/rest/?method=whosonfirst.places.search&access_token=" + wof_access_token + "&names=" +  wof_search_value + "&placetype=" + wof_parent_level_value;
 
+        console.log("wof search url: " + search_url);
         xhr_search_wof.open('GET', search_url, true);
         xhr_search_wof.send();
         xhr_search_wof.addEventListener("readystatechange", search_wof_countries, false);   
@@ -130,10 +160,12 @@ search.addEventListener("click", function(){
             if (xhr_search_wof.readyState == 4 && xhr_search_wof.status == 200) {
                 response = JSON.parse(xhr_search_wof.responseText);
                 var wof_search_top_result = response.results[0]['wof:id'];
-            
+                console.log(response);
                 console.log("top result is " + wof_search_top_result);
                 var wof_id = document.getElementById("wof_id");
+                var wof_search_top_name = response.results[0]['wof:name'];
                 wof_id.value = wof_search_top_result;
+                wof_search.value = wof_search_top_name.toUpperCase() + "!";
             }
         } // wof_search 
         return false; 
