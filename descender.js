@@ -12,7 +12,6 @@ function start(wof_id, wof_level) {
 
     // 
     // // test WOF IDs, level, and token   
-    var wof_access_token = 'bfa3cbc6f49de8faf4d99e41c8d328f2';
 
     //     var wof_id = 85688637; // california
     //     var wof_id = 85632227; // tanzania
@@ -26,7 +25,8 @@ function start(wof_id, wof_level) {
     // global variables for parent name
     var wof_parent = wof_id;
     var wof_parent_name;
-    var wof_parent_url = 'https://whosonfirst.mapzen.com/api/rest/?method=whosonfirst.places.getInfo&access_token=' + wof_access_token + '&id=' + wof_parent + "&extras=geom:bbox,wof:hierarchy,";
+//     var wof_parent_url = 'https://whosonfirst.mapzen.com/api/rest/?method=whosonfirst.places.getInfo&access_token=' + wof_access_token + '&id=' + wof_parent + "&extras=geom:bbox,wof:hierarchy,";
+    var wof_parent_url = 'https://whosonfirst-api.dev.mapzen.com/?method=whosonfirst.places.getInfo&id=' + wof_parent + "&extras=geom:bbox,wof:hierarchy,";
     var wof_parent_bbox;
     var wof_grandparent;
     var wof_hierarchy = [];
