@@ -149,8 +149,7 @@ search.addEventListener("click", function(){
     console.log("passing " + wof_search_value + " to WOF search");
 //     search.onclick = function(){
         var xhr_search_wof = new XMLHttpRequest();
-        var search_url = "https://whosonfirst.mapzen.com/api/rest/?method=whosonfirst.places.search&access_token=" + wof_access_token + "&names=" +  wof_search_value + "&placetype=" + wof_parent_level_value;
-
+        var search_url = "https://whosonfirst-api.dev.mapzen.com/?method=whosonfirst.places.search&names=" +  wof_search_value + "&placetype=" + wof_parent_level_value;
         console.log("wof search url: " + search_url);
         xhr_search_wof.open('GET', search_url, true);
         xhr_search_wof.send();
@@ -166,6 +165,9 @@ search.addEventListener("click", function(){
                 var wof_search_top_name = response.results[0]['wof:name'];
                 wof_id.value = wof_search_top_result;
                 wof_search.value = wof_search_top_name.toUpperCase() + "!";
+//                 wof_search.style.backgroundColor = "lightgreen";
+//                 wof_id.style.backgroundColor = "lightgreen";
+
             }
         } // wof_search 
         return false; 
