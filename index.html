@@ -33,18 +33,19 @@
  -->
 <br>Search all of the
 <select name="wof_parent_level" value='country' id="wof_parent_level">
+        <option value="continent">continents</option>
         <option value="country" selected="selected">countries</option>
         <option value="region">regions</option>
-        <option value="county">counties</option>
-        <option value="localadmin">localadmins</option>
-        <option value="locality">localities</option>
-        <option value="macroohood">macrohoods</option>
-        <option value="neighbourhood">neighbourhoods</option>
-        <option value="microhood">microhoods</option>
-        <option value="postalcode">postalcodes</option>
-        <option value="campus">campuses</option>
-        <option value="venue">venues</option>
-        <option value="address">addresses</option>
+        <option value="county">counties*</option>
+        <option value="localadmin">localadmins*</option>
+        <option value="locality">localities*</option>
+        <option value="macrohood">macrohoods*</option>
+        <option value="neighbourhood">neighbourhoods*</option>
+        <option value="microhood">microhoods*</option>
+        <option value="postalcode">postalcodes*</option>
+        <option value="campus">campuses*</option>
+        <option value="venue">venues*</option>
+        <option value="address">addresses*</option>
         <option value="">--less common--</option>
         <option value="planet">planets</option>
         <option value="continent">continents</option>
@@ -61,7 +62,7 @@
 for
   <input type="text" name="wof_search" id="wof_search" value="Canada">
    
-  <button class="btn btn-mapzen" type="submit" id="wof_search_button">GET WOF</button>
+  <button class="btn btn-mapzen" type="submit" id="wof_search_button">GET WOF*</button>
 <br>
 <!-- experiments in a UI for entering a WOF ID and level -->
 <form name="wof_data">  <!--  action="start()" -->
@@ -75,7 +76,7 @@ for
         <option value="county">county (CO)</option>
         <option value="localadmin">localadmin (CO)</option>
         <option value="locality">locality (C)</option>
-        <option value="macroohood">macrohood (O)</option>
+        <option value="macrohood">macrohood (O)</option>
         <option value="neighbourhood">neighbourhood (C)</option>
         <option value="microhood">microhood (O)</option>
         <option value="postalcode">postalcode (CO)</option>
@@ -122,11 +123,21 @@ for
 
 
 <br>
+* Note: only the first search result is returned right now. It finds countries pretty well, regions are ok, but for lower levels like localities you may not get what you want, but if you try the <a href="https://whosonfirst.mapzen.com/spelunker">Who's on First Spelunker</a> you just might find you get what you need.
+<br><br>
+Some interesting descents:
+<ul> 
+<li><a href="https://burritojustice.github.io/wof-descender/?wof_id=102191577&wof_level=region">regions in South America</a></li>
+<li><a href="https://burritojustice.github.io/wof-descender/?wof_id=85922583&wof_level=postalcode">ZIP codes in San Francisco</a></li>
+<li><a href="https://burritojustice.github.io/wof-descender/?wof_id=85632685&wof_level=timezone">Timezones in Brazil</a></li>
+<li><a href="https://burritojustice.github.io/wof-descender/?wof_id=85632469&wof_level=disputed">disputed areas of India</a></li>
+</ul>
 
+
+<!-- 
 Want the GeoJSON of California's 57 counties? Enter 85688637 and choose `county`!<br>
-Or Canada's 10 provinces and 3 territories?  85633041 and choose `region`!<br>
-Or San Francisco's ZIP codes? 85922583 and choose `postalcode`!<br>
-(While you can skip levels (a.k.a. <a href="https://github.com/whosonfirst/whosonfirst-placetypes">placetypes</a>), only the first 500 results will be returned for now.)
+ -->
+While you can skip levels (a.k.a. <a href="https://github.com/whosonfirst/whosonfirst-placetypes">placetypes</a>), only the first 500 results will be returned for now.
 
 <script type="text/javascript">
 
@@ -137,7 +148,7 @@ map.setView([40, -112.4], 3);
 // search for country wof id
 
 
-var wof_access_token = 'bfa3cbc6f49de8faf4d99e41c8d328f2';
+var api_key = 'mapzen-vhKiPwF';
 var search = document.getElementById("wof_search_button");
 var wof_search = document.getElementById("wof_search");
 var wof_parent_level = document.getElementById("wof_parent_level");
@@ -149,7 +160,7 @@ search.addEventListener("click", function(){
     console.log("passing " + wof_search_value + " to WOF search");
 //     search.onclick = function(){
         var xhr_search_wof = new XMLHttpRequest();
-        var search_url = "https://whosonfirst-api.dev.mapzen.com/?method=whosonfirst.places.search&names=" +  wof_search_value + "&placetype=" + wof_parent_level_value;
+        var search_url = "https://whosonfirst-api.dev.mapzen.com/?method=whosonfirst.places.search&names=" +  wof_search_value + "&placetype=" + wof_parent_level_value + "&api_key=" + api_key;
         console.log("wof search url: " + search_url);
         xhr_search_wof.open('GET', search_url, true);
         xhr_search_wof.send();
