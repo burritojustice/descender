@@ -46,11 +46,11 @@ function start(wof_id, wof_level) {
 
     // build url for list to get list of descendants 
 
-    var url = 'https://whosonfirst.mapzen.com/api/rest/?method=whosonfirst.places.getDescendants&access_token=' + wof_access_token + '&id=' + wof_id +'&placetype=' + wof_level + '&page=1&per_page=2000&exclude=nullisland';
+//     var url = 'https://whosonfirst.mapzen.com/api/rest/?method=whosonfirst.places.getDescendants&access_token=' + wof_access_token + '&id=' + wof_id +'&placetype=' + wof_level + '&page=1&per_page=2000&exclude=nullisland';
 //     console.log(url);
-    /*
-    url = 'https://whosonfirst-api.dev.mapzen.com/api/rest/?method=whosonfirst.places.getDescendants&id=' + wof_id +'&placetype=' + wof_level + '&page=1&per_page=2000';
-    */
+    
+    var url = 'https://whosonfirst-api.dev.mapzen.com/?method=whosonfirst.places.getDescendants&id=' + wof_id +'&placetype=' + wof_level + '&page=1&per_page=500&api_key=' + api_key;
+    
 
 
     
