@@ -13,7 +13,7 @@ function start(wof_id, wof_level) {
     var wof_parent_name;
 //     var wof_parent_url = 'https://whosonfirst.mapzen.com/api/rest/?method=whosonfirst.places.getInfo&access_token=' + wof_access_token + '&id=' + wof_parent + "&extras=geom:bbox,wof:hierarchy,";
     var api_key = 'mapzen-vhKiPwF'
-    var wof_parent_url = 'https://whosonfirst-api.dev.mapzen.com/?method=whosonfirst.places.getInfo&id=' + wof_parent + "&extras=geom:bbox,wof:hierarchy&api_key=" + api_key;;
+    var wof_parent_url = 'https://whosonfirst-api.dev.mapzen.com/?method=whosonfirst.places.getInfo&id=' + wof_parent + "&extras=geom:bbox,wof:hierarchy&api_key=" + api_key;
     var wof_parent_bbox;
     var wof_grandparent;
     var wof_hierarchy = [];
@@ -251,9 +251,14 @@ function start(wof_id, wof_level) {
         // add descendant names to list below map
         var descendant_name = document.getElementById("descendant_name");
         var child = document.getElementById("p1");
-        var node = document.createTextNode((1 + descendantsProcessed) + ": " + wof_name + "! (" + wof_id + ") ");
-        child.appendChild(node);
+//         var node = document.createTextNode((1 + descendantsProcessed) + ": " + wof_name + "! (" + wof_id + ") ");
+//         var descendant_link = (1 + descendantsProcessed) + ": " + wof_name + "! (" + wof_id + ") ";
+        var descendant_url = "?wof_id=" + wof_id;
+        var descendant_link = (1 + descendantsProcessed) + ": " + "<a href=" + descendant_url + ">" + wof_name + "</a>! ";
 
+
+//         child.appendChild(node);
+        child.innerHTML = child.innerHTML + descendant_link;
         console.log('processed: ' + (1 + descendantsProcessed) + ' of ' + descendantsCount);
         descendantsProcessed++;
 
