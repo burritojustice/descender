@@ -129,14 +129,10 @@ Some interesting descents:
 <ul> 
 <li><a href="https://burritojustice.github.io/wof-descender/?wof_id=102191577&wof_level=region">regions in South America</a></li>
 <li><a href="https://burritojustice.github.io/wof-descender/?wof_id=85922583&wof_level=postalcode">ZIP codes in San Francisco</a></li>
-<li><a href="https://burritojustice.github.io/wof-descender/?wof_id=85632685&wof_level=timezone">Timezones in Brazil</a></li>
+<li><a href="https://burritojustice.github.io/wof-descender/?wof_id=85632685&wof_level=timezone">timezones in Russia</a></li>
 <li><a href="https://burritojustice.github.io/wof-descender/?wof_id=85632469&wof_level=disputed">disputed areas of India</a></li>
 </ul>
 
-
-<!-- 
-Want the GeoJSON of California's 57 counties? Enter 85688637 and choose `county`!<br>
- -->
 While you can skip levels (a.k.a. <a href="https://github.com/whosonfirst/whosonfirst-placetypes">placetypes</a>), only the first 500 results will be returned for now.
 
 <script type="text/javascript">
@@ -176,8 +172,8 @@ search.addEventListener("click", function(){
                 var wof_search_top_name = response.results[0]['wof:name'];
                 wof_id.value = wof_search_top_result;
                 wof_search.value = wof_search_top_name.toUpperCase() + "!";
-//                 wof_search.style.backgroundColor = "lightgreen";
-//                 wof_id.style.backgroundColor = "lightgreen";
+                wof_search.style.backgroundColor = "lightgreen";
+                wof_id.style.backgroundColor = "lightgreen";
 
             }
         } // wof_search 
@@ -219,7 +215,8 @@ window.addEventListener("load", function () {
     b.removeAttribute("disabled");
     
     b.onclick = function(){
-        
+        wof_search.style.backgroundColor = "white";
+        wof_id.style.backgroundColor = "white";
         var wof_id = document.getElementById("wof_id");
         wof_id = wof_id.value;
         
