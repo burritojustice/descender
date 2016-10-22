@@ -4,6 +4,7 @@
 <head>
   <title>WOF descender</title>
   <script type="text/javascript" src="FileSaver.js"></script>
+<!--   <script type="text/javascript" src="gistlink.js"></script> -->
   <script type="text/javascript" src="descender.js"></script>
   <link rel="stylesheet" href="https://mapzen.com/js/mapzen.css">
   <script src="https://mapzen.com/js/mapzen.min.js"></script>
@@ -127,10 +128,10 @@ for
 <br><br>
 Some interesting descents:
 <ul> 
-<li><a href="https://burritojustice.github.io/wof-descender/?wof_id=102191577&wof_level=region">regions in South America</a></li>
-<li><a href="https://burritojustice.github.io/wof-descender/?wof_id=85922583&wof_level=postalcode">ZIP codes in San Francisco</a></li>
-<li><a href="https://burritojustice.github.io/wof-descender/?wof_id=85632685&wof_level=timezone">timezones in Russia</a></li>
-<li><a href="https://burritojustice.github.io/wof-descender/?wof_id=85632469&wof_level=disputed">disputed areas of India</a></li>
+<li><a href="?wof_id=102191577&wof_level=region">regions in South America</a></li>
+<li><a href="?wof_id=85922583&wof_level=postalcode">ZIP codes in San Francisco</a></li>
+<li><a href="?wof_id=85632685&wof_level=timezone">timezones in Russia</a></li>
+<li><a href="?wof_id=85632469&wof_level=disputed">disputed areas of India</a></li>
 </ul>
 
 While you can skip levels (a.k.a. <a href="https://github.com/whosonfirst/whosonfirst-placetypes">placetypes</a>), only the first 500 results will be returned for now.
@@ -156,8 +157,8 @@ search.addEventListener("click", function(){
     console.log("passing " + wof_search_value + " to WOF search");
 //     search.onclick = function(){
         var xhr_search_wof = new XMLHttpRequest();
-        var search_url = "https://whosonfirst-api.dev.mapzen.com/?method=whosonfirst.places.search&names=" +  wof_search_value + "&placetype=" + wof_parent_level_value + "&api_key=" + api_key;
-        console.log("wof search url: " + search_url);
+        var search_url = "https://whosonfirst-api.dev.mapzen.com/?method=whosonfirst.places.search&names=" +  wof_search_value + "&placetype=" + wof_parent_level_value + "&extras=geom:bbox&api_key=" + api_key;
+//         console.log("wof search url: " + search_url);
         xhr_search_wof.open('GET', search_url, true);
         xhr_search_wof.send();
         xhr_search_wof.addEventListener("readystatechange", search_wof_countries, false);   
@@ -174,7 +175,14 @@ search.addEventListener("click", function(){
                 wof_search.value = wof_search_top_name.toUpperCase() + "!";
                 wof_search.style.backgroundColor = "lightgreen";
                 wof_id.style.backgroundColor = "lightgreen";
-//                 map.fitBounds([sw,ne]);
+                wof_parent_bbox = response.results[0]['geom:bbox'];
+                var latlon = wof_parent_bbox.split(',');
+                sw = [latlon[1],latlon[0]];
+                ne = [latlon[3],latlon[2]];
+                map.fitBounds([sw,ne]);
+                var bounds = [sw,ne];
+                var boundingBox = L.rectangle(bounds, {color: "#90EE90", weight: 1});
+                map.addLayer(boundingBox);
             }
         } // wof_search 
         return false; 

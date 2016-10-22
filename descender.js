@@ -79,7 +79,7 @@ function start(wof_id, wof_level) {
 
         console.log("hey mom and dad: " + wof_parent_name);
         
-// pluralize -- probably a bad way to do this as it changes wof_level
+// pluralize -- probably a bad way to do this as it changes wof_level but
 
         if (wof_level == "ocean") {
             wof_level = "oceans";
