@@ -6,17 +6,17 @@ function start(wof_id, wof_level) {
 
     console.log( wof_id );
     console.log( wof_level );
-    
 
     // global variables for parent name
     var wof_parent = wof_id;
     var wof_parent_name;
-//     var wof_parent_url = 'https://whosonfirst.mapzen.com/api/rest/?method=whosonfirst.places.getInfo&access_token=' + wof_access_token + '&id=' + wof_parent + "&extras=geom:bbox,wof:hierarchy,";
     var api_key = 'mapzen-vhKiPwF'
     var wof_parent_url = 'https://whosonfirst-api.dev.mapzen.com/?method=whosonfirst.places.getInfo&id=' + wof_parent + "&extras=geom:bbox,wof:hierarchy&api_key=" + api_key;
     var wof_parent_bbox;
     var wof_grandparent;
     var wof_hierarchy = [];
+    var sw, ne;
+
     
     var includeParent = false;
 //     var includeParentStatus = document.getElementById("includeParent");
@@ -41,24 +41,16 @@ function start(wof_id, wof_level) {
     // array for descendant's GeoJSON 
 
     var features = [];
-
-
-
+    
     // build url for list to get list of descendants 
-
-//     var url = 'https://whosonfirst.mapzen.com/api/rest/?method=whosonfirst.places.getDescendants&access_token=' + wof_access_token + '&id=' + wof_id +'&placetype=' + wof_level + '&page=1&per_page=2000&exclude=nullisland';
-//     console.log(url);
     
     var url = 'https://whosonfirst-api.dev.mapzen.com/?method=whosonfirst.places.getDescendants&id=' + wof_id +'&placetype=' + wof_level + '&page=1&per_page=500&api_key=' + api_key;
-    
-
-
-    
+    // console.log(url);
 
     // get name of parent wof_id
     
     xhr_parent.open('GET', wof_parent_url, true);
-//     console.log(wof_parent_url);
+    console.log(wof_parent_url);
     xhr_parent.send();
     xhr_parent.addEventListener("readystatechange", get_parent_name, false);   
     
@@ -71,7 +63,8 @@ function start(wof_id, wof_level) {
         wof_parent_bbox = response.record['geom:bbox'];
         wof_parent_type = response.record['wof:placetype'];
         wof_grandparent = response.record['wof:parent_id'];
-//         wof_hierarchy = response.record['wof:hierarchy']['continent_id'];
+//         wof_parent_geojson = response.record['geometry'];
+        // wof_hierarchy = response.record['wof:hierarchy']['continent_id'];
         console.log("grandparent: " + wof_grandparent);
         
         // chop up and rearrange bounding box
@@ -80,11 +73,13 @@ function start(wof_id, wof_level) {
         ne = [latlon[3],latlon[2]];
 
         console.log(wof_parent_name + " bbox: sw=" + sw + " ne= " + ne);
-
+//         alert("About to fitBounds to " + sw + "/" + ne);
         map.fitBounds([sw,ne]);
-
+//         L.geoJson(wof_parent_geojson, {style: {weight:2, color:'#ff0000'}}).addTo(map);
 
         console.log("hey mom and dad: " + wof_parent_name);
+        
+// pluralize -- probably a bad way to do this as it changes wof_level
 
         if (wof_level == "ocean") {
             wof_level = "oceans";
@@ -253,7 +248,20 @@ function start(wof_id, wof_level) {
         var child = document.getElementById("p1");
 //         var node = document.createTextNode((1 + descendantsProcessed) + ": " + wof_name + "! (" + wof_id + ") ");
 //         var descendant_link = (1 + descendantsProcessed) + ": " + wof_name + "! (" + wof_id + ") ";
-        var descendant_url = "?wof_id=" + wof_id;
+        var descent_type;
+        if (wof_placetype == "country") {
+            descent_type = "region";
+        }
+        if (wof_placetype == "region") {
+            descent_type = "county";
+        }        
+        if (wof_placetype == "county") {
+            descent_type = "locality";
+        }        
+        if (wof_placetype == "locality") {
+            descent_type = "postalcode";
+        }            
+        var descendant_url = "?wof_id=" + wof_id + "&wof_level=" + descent_type;
         var descendant_link = (1 + descendantsProcessed) + ": " + "<a href=" + descendant_url + ">" + wof_name + "</a>! ";
 
 

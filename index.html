@@ -174,7 +174,7 @@ search.addEventListener("click", function(){
                 wof_search.value = wof_search_top_name.toUpperCase() + "!";
                 wof_search.style.backgroundColor = "lightgreen";
                 wof_id.style.backgroundColor = "lightgreen";
-
+//                 map.fitBounds([sw,ne]);
             }
         } // wof_search 
         return false; 
@@ -225,7 +225,8 @@ window.addEventListener("load", function () {
         
         // console.log("wof id is " + wof_id);
         // console.log("wof level is " + wof_level);
-        
+//         wof_search.value = wof_search_value;
+
         try {
            start(wof_id, wof_level);
         } catch (e) {
