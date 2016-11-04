@@ -16,7 +16,10 @@ function start(wof_id, wof_level) {
     var wof_grandparent;
     var wof_hierarchy = [];
     var sw, ne;
-
+    var descendant_pages; // for paginated wof descendant responses
+    var descendants_total; // ^
+    var descendant_pages_processed;
+    var current_descendant_page;
     
     var includeParent = false;
 //     var includeParentStatus = document.getElementById("includeParent");
@@ -44,7 +47,8 @@ function start(wof_id, wof_level) {
     
     // build url for list to get list of descendants 
     
-    var url = 'https://whosonfirst-api.dev.mapzen.com/?method=whosonfirst.places.getDescendants&id=' + wof_id +'&placetype=' + wof_level + '&page=1&per_page=500&api_key=' + api_key;
+    var wof_page = 1;
+    var url = 'https://whosonfirst-api.dev.mapzen.com/?method=whosonfirst.places.getDescendants&id=' + wof_id +'&placetype=' + wof_level + '&page=' + wof_page + '&per_page=500&api_key=' + api_key;
     // console.log(url);
 
     // get name of parent wof_id
@@ -79,7 +83,7 @@ function start(wof_id, wof_level) {
 
         console.log("hey mom and dad: " + wof_parent_name);
         
-// pluralize -- probably a bad way to do this as it changes wof_level but
+// pluralize placetypes for display -- probably a bad way to do this as it changes wof_level but
 
         if (wof_level == "ocean") {
             wof_level = "oceans";
@@ -132,6 +136,7 @@ function start(wof_id, wof_level) {
         } 
     }
     
+    descendant_pages_processed = 0;
 
     // get list of descendants            
 
@@ -140,13 +145,33 @@ function start(wof_id, wof_level) {
     xhr.addEventListener("readystatechange", process_wof_id, false);
 
     // check readyState of XHR request for descendant list
+    
 
     function process_wof_id(e) {
-    if (xhr.readyState == 4 && xhr.status == 200) {
+    if (this.readyState == 4 && this.status == 200) {
         console.log("building URLs: " + Date());
-        response = JSON.parse(xhr.responseText);
+        response = JSON.parse(this.responseText);
+        current_descendant_page = response.page;
         descendantsCount = response.results.length;
+        descendant_pages = response.pages;
+        console.log(current_descendant_page + " of " + descendant_pages + " pages");
+        descendants_total = response.total;
+        console.log(descendants_total + " descendant total");
         
+        // leap of faith 
+//         if ((descendant_pages > 1) && (descendant_pages_processed < descendant_pages)){
+        if ((descendant_pages > 1) && (current_descendant_page < descendant_pages)){
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.send();
+            xhr.addEventListener("readystatechange", process_wof_id, false);
+            descendant_pages_processed++;
+            console.log("INCEPTION: " + "current descendant page = " + current_descendant_page + ", processed = " +  descendant_pages_processed);
+
+        }
+        
+         
         var parent_wof_url = makeWOFURL(wof_parent);
         var wof_url = []; 
 //         if (includeParent) {
@@ -177,8 +202,12 @@ function start(wof_id, wof_level) {
         // count and wait
     
         var wait = function() {
-            console.log("WAITING..." + descendantsProcessed + " of " + descendantsCount);
-             if (descendantsProcessed < descendantsCount){
+//             console.log("WAITING..." + descendantsProcessed + " of " + descendantsCount);
+            console.log("WAITING..." + descendantsProcessed + " of " + descendants_total);
+
+//              if (descendantsProcessed < descendantsCount){
+             if (descendantsProcessed < descendants_total){
+
                             setTimeout(wait, 500);
                             console.log("buffering...");
                             return;
@@ -205,7 +234,8 @@ function start(wof_id, wof_level) {
             // update button text
             var save = document.getElementById("save");
             save.disabled = "";
-            save.innerHTML = "CLICK UPON MY " + blobSizeMB + " GEOJSON BLOB OF " + descendantsCount + " " + wof_level + " IN " +  wof_parent_name;
+//             save.innerHTML = "CLICK UPON MY " + blobSizeMB + " GEOJSON BLOB OF " + descendantsCount + " " + wof_level + " IN " +  wof_parent_name;
+            save.innerHTML = "CLICK UPON MY " + blobSizeMB + " GEOJSON BLOB OF " + descendants_total + " " + wof_level + " IN " +  wof_parent_name;
             
             // wait for user to click on the button to save the blob
             save.onclick = function() {
@@ -220,7 +250,7 @@ function start(wof_id, wof_level) {
     if (this.readyState == 4 && this.status == 200) {
     
         // JSONify WOF data 
-        this.wofJSON = this.responseText;  
+        this.wofJSON = this.responseText;  // is this still needed?
         feature = JSON.parse(this.responseText);
         var wof_name = feature.properties['wof:name'];
         var wof_id = feature.properties['wof:id'];
