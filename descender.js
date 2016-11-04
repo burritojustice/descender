@@ -159,16 +159,17 @@ function start(wof_id, wof_level) {
         console.log(descendants_total + " descendant total");
         
         // leap of faith 
-//         if ((descendant_pages > 1) && (descendant_pages_processed < descendant_pages)){
-        if ((descendant_pages > 1) && (current_descendant_page < descendant_pages)){
-
+        if ((descendant_pages > 1) && (descendant_pages_processed < descendant_pages)){
+//         if ((descendant_pages > 1) && (current_descendant_page < descendant_pages)){
+        url = 'https://whosonfirst-api.dev.mapzen.com/?method=whosonfirst.places.getDescendants&id=' + wof_id +'&placetype=' + wof_level + '&page=' + descendant_pages_processed + '&per_page=500&api_key=' + api_key;
+        console.log("am getting " + url);
             var xhr = new XMLHttpRequest();
             xhr.open('GET', url, true);
             xhr.send();
             xhr.addEventListener("readystatechange", process_wof_id, false);
             descendant_pages_processed++;
             console.log("INCEPTION: " + "current descendant page = " + current_descendant_page + ", processed = " +  descendant_pages_processed);
-
+            
         }
         
          
