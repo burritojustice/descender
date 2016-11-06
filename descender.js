@@ -20,6 +20,8 @@ function start(wof_id, wof_level) {
     var descendants_total; // ^
     var descendant_pages_processed;
     var current_descendant_page;
+    var wof_id_parent_global = wof_id;
+
     
     var includeParent = false;
 //     var includeParentStatus = document.getElementById("includeParent");
@@ -149,20 +151,25 @@ function start(wof_id, wof_level) {
 
     function process_wof_id(e) {
     if (this.readyState == 4 && this.status == 200) {
-        console.log("building URLs: " + Date());
+    console.log("just got " + url)
         response = JSON.parse(this.responseText);
         current_descendant_page = response.page;
         descendantsCount = response.results.length;
         descendant_pages = response.pages;
         console.log(current_descendant_page + " of " + descendant_pages + " pages");
         descendants_total = response.total;
-        console.log(descendants_total + " descendant total");
+        console.log(descendants_total + " descendants total");
         
         // leap of faith 
-        if ((descendant_pages > 1) && (descendant_pages_processed < descendant_pages)){
+//         if (current_descendant_page < descendant_pages){
+        if (response.page < response.pages){
+//         if ((descendant_pages > 1) && (current_pages_processed < descendant_pages)){
 //         if ((descendant_pages > 1) && (current_descendant_page < descendant_pages)){
-        url = 'https://whosonfirst-api.dev.mapzen.com/?method=whosonfirst.places.getDescendants&id=' + wof_id +'&placetype=' + wof_level + '&page=' + descendant_pages_processed + '&per_page=500&api_key=' + api_key;
-        console.log("am getting " + url);
+        var next_page = response.page + 1;
+        
+//         url = 'https://whosonfirst-api.dev.mapzen.com/?method=whosonfirst.places.getDescendants&id=' + wof_id +'&placetype=' + wof_level + '&page=' + next_page + '&per_page=500&api_key=' + api_key;
+        url = 'https://whosonfirst-api.dev.mapzen.com/?method=whosonfirst.places.getDescendants&id=' + wof_id_parent_global +'&placetype=' + wof_level + '&page=' + next_page + '&per_page=500&api_key=' + api_key;
+        console.log("am getting page" + next_page + " for " + wof_id + " via " + url);
             var xhr = new XMLHttpRequest();
             xhr.open('GET', url, true);
             xhr.send();
