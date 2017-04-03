@@ -59,10 +59,10 @@ function start(wof_id, wof_level) {
         console.log("getting parent name: " + Date());
         response = JSON.parse(xhr_parent.responseText);
         //get parent name
-        wof_parent_name = response.places['wof:name'];
-        wof_parent_bbox = response.places['geom:bbox'];
-        wof_parent_type = response.places['wof:placetype'];
-        wof_grandparent = response.places['wof:parent_id'];
+        wof_parent_name = response.place['wof:name'];
+        wof_parent_bbox = response.place['geom:bbox'];
+        wof_parent_type = response.place['wof:placetype'];
+        wof_grandparent = response.place['wof:parent_id'];
 //         wof_parent_geojson = response.record['geometry'];
         // wof_hierarchy = response.record['wof:hierarchy']['continent_id'];
         console.log("grandparent: " + wof_grandparent);
