@@ -10,8 +10,8 @@ function start(wof_id, wof_level) {
     // global variables for parent name
     var wof_parent = wof_id;
     var wof_parent_name;
-    var api_key = 'mapzen-vhKiPwF'
-    var wof_parent_url = 'https://whosonfirst-api.dev.mapzen.com/?method=whosonfirst.places.getInfo&id=' + wof_parent + "&extras=geom:bbox,wof:hierarchy&api_key=" + api_key;
+    var api_key = 'mapzen-z2PnjDa'
+    var wof_parent_url = 'https://whosonfirst-api.mapzen.com/?method=whosonfirst.places.getInfo&id=' + wof_parent + "&extras=geom:bbox,wof:hierarchy&api_key=" + api_key;
     var wof_parent_bbox;
     var wof_grandparent;
     var wof_hierarchy = [];
@@ -44,7 +44,7 @@ function start(wof_id, wof_level) {
     
     // build url for list to get list of descendants 
     
-    var url = 'https://whosonfirst-api.dev.mapzen.com/?method=whosonfirst.places.getDescendants&id=' + wof_id +'&placetype=' + wof_level + '&page=1&per_page=500&api_key=' + api_key;
+    var url = 'https://whosonfirst-api.mapzen.com/?method=whosonfirst.places.getDescendants&id=' + wof_id +'&placetype=' + wof_level + '&page=1&per_page=500&api_key=' + api_key;
     // console.log(url);
 
     // get name of parent wof_id
