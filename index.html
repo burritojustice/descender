@@ -166,7 +166,7 @@ search.addEventListener("click", function(){
             function search_wof_countries(e) {
             if (xhr_search_wof.readyState == 4 && xhr_search_wof.status == 200) {
                 response = JSON.parse(xhr_search_wof.responseText);
-                var wof_search_top_result = response.results[0]['wof:id'];
+                var wof_search_top_result = response.places[0]['wof:id'];
                 console.log(response);
                 console.log("top result is " + wof_search_top_result);
                 var wof_id = document.getElementById("wof_id");
