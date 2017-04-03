@@ -137,7 +137,7 @@ Some interesting descents:
 While you can skip levels (a.k.a. <a href="https://github.com/whosonfirst/whosonfirst-placetypes">placetypes</a>), only the first 500 results will be returned for now.
 
 <script type="text/javascript">
-
+L.Mapzen.apiKey = 'mapzen-UJDfMvY';
 var map = L.Mapzen.map('map');
 map.setView([40, -112.4], 3);
 // includeParent = false;
@@ -145,7 +145,7 @@ map.setView([40, -112.4], 3);
 // search for country wof id
 
 
-var api_key = 'mapzen-vhKiPwF';
+var api_key = 'mapzen-z2PnjDa';
 var search = document.getElementById("wof_search_button");
 var wof_search = document.getElementById("wof_search");
 var wof_parent_level = document.getElementById("wof_parent_level");
@@ -157,7 +157,7 @@ search.addEventListener("click", function(){
     console.log("passing " + wof_search_value + " to WOF search");
 //     search.onclick = function(){
         var xhr_search_wof = new XMLHttpRequest();
-        var search_url = "https://whosonfirst-api.dev.mapzen.com/?method=whosonfirst.places.search&names=" +  wof_search_value + "&placetype=" + wof_parent_level_value + "&extras=geom:bbox&api_key=" + api_key;
+        var search_url = "https://whosonfirst-api.mapzen.com/?method=whosonfirst.places.search&names=" +  wof_search_value + "&placetype=" + wof_parent_level_value + "&extras=geom:bbox&api_key=" + api_key;
 //         console.log("wof search url: " + search_url);
         xhr_search_wof.open('GET', search_url, true);
         xhr_search_wof.send();
