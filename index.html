@@ -170,12 +170,12 @@ search.addEventListener("click", function(){
                 console.log(response);
                 console.log("top result is " + wof_search_top_result);
                 var wof_id = document.getElementById("wof_id");
-                var wof_search_top_name = response.results[0]['wof:name'];
+                var wof_search_top_name = response.places[0]['wof:name'];
                 wof_id.value = wof_search_top_result;
                 wof_search.value = wof_search_top_name.toUpperCase() + "!";
                 wof_search.style.backgroundColor = "lightgreen";
                 wof_id.style.backgroundColor = "lightgreen";
-                wof_parent_bbox = response.results[0]['geom:bbox'];
+                wof_parent_bbox = response.places[0]['geom:bbox'];
                 var latlon = wof_parent_bbox.split(',');
                 sw = [latlon[1],latlon[0]];
                 ne = [latlon[3],latlon[2]];
